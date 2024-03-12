@@ -1,13 +1,12 @@
 const userModel = require("../models/user");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const SECRET_KEY = process.env.SECRET_KEY;
 
 const signup = async (req, res) =>{
 
     const {username, email, password} = req.body;
     try {
-
+        console.log("", process.env.SECRET_KEY,process.env.MONGO_URL);
         const existingUser = await userModel.findOne({ email : email});
         if(existingUser){
             return res.status(400).json({message: "User already exists"});
@@ -21,7 +20,7 @@ const signup = async (req, res) =>{
             username: username
         });
 
-        const token = jwt.sign({email : result.email, id : result._id }, SECRET_KEY);
+        const token = jwt.sign({email : result.email, id : result._id }, process.env.SECRET_KEY);
         res.status(201).json({user: result, token: token});
         
     } catch (error) {
@@ -48,7 +47,7 @@ const signin = async (req, res)=>{
             return res.status(400).json({message : "Invalid Credentials"});
         }
 
-        const token = jwt.sign({email : existingUser.email, id : existingUser._id }, SECRET_KEY);
+        const token = jwt.sign({email : existingUser.email, id : existingUser._id }, process.env.SECRET_KEY);
         res.status(200).json({user: existingUser, token: token});
 
 
